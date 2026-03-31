@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Properties – Jaipur PrimeEstate</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C; --gold-light: #E8C96A; --gold-dark: #A07830;
+    --deep: #1A1208; --cream: #FAF6EE; --sand: #F0E8D6;
+    --text: #3A2E1E; --muted: #7A6A50; --white: #FFFFFF;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
+
+  /* ===== TOPBAR ===== */
+  .topbar { background: var(--deep); color: #c8b88a; font-size: 12px; letter-spacing: 1px; text-align: center; padding: 8px 20px; }
+  .topbar a { color: var(--gold); text-decoration: none; }
+
+  /* ===== NAV ===== */
+  nav { position: sticky; top: 0; z-index: 1000; background: var(--white); border-bottom: 1px solid #e8dfc8; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; height: 68px; box-shadow: 0 2px 20px rgba(0,0,0,0.06); }
+  .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .nav-logo .logo-icon { width: 42px; height: 42px; background: var(--deep); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .nav-logo .logo-icon img { width: auto; height: 100%; }
+  .nav-logo strong { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--deep); }
+  .nav-logo span { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; display: block; }
+  .nav-links { display: flex; align-items: center; gap: 0; list-style: none; }
+  .nav-links li a { display: block; padding: 24px 16px; font-size: 13px; font-weight: 500; color: var(--text); text-decoration: none; transition: color 0.2s; }
+  .nav-links li a:hover, .nav-links li a.active { color: var(--gold-dark); }
+  .nav-cta { background: var(--gold) !important; color: var(--deep) !important; font-weight: 700 !important; padding: 10px 22px !important; border-radius: 2px; }
+  .nav-hamburger { display: none; cursor: pointer; background: none; border: none; padding: 6px; }
+  .nav-hamburger span { display: block; width: 24px; height: 2px; background: var(--deep); margin: 5px 0; }
+  @media(max-width:900px){ nav{padding:0 20px;} .nav-links{display:none;flex-direction:column;position:absolute;top:68px;left:0;right:0;background:var(--white);border-top:1px solid #e8dfc8;padding:10px 0;box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:100;} .nav-links.open{display:flex;} .nav-links li a{padding:12px 24px;} .nav-hamburger{display:block;} }
+
+  /* ===== HERO STRIP ===== */
+  .properties-hero {
+    background: var(--deep);
+    padding: 56px 40px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  .properties-hero::before { content: 'PROPERTIES'; position: absolute; font-family: 'Cormorant Garamond', serif; font-size: 150px; color: rgba(255,255,255,0.03); top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; }
+  .properties-hero .tag { display: inline-block; background: rgba(201,168,76,0.15); border: 1px solid var(--gold); color: var(--gold-light); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; padding: 5px 18px; margin-bottom: 16px; }
+  .properties-hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px,5vw,64px); font-weight: 300; color: var(--white); }
+  .properties-hero h1 em { font-style: italic; color: var(--gold-light); }
+  .properties-hero p { color: rgba(255,255,255,0.55); font-size: 15px; margin-top: 12px; }
+
+  /* ===== FILTERS ===== */
+  .filter-bar { background: var(--white); border-bottom: 1px solid #e8dfc8; padding: 0 40px; display: flex; align-items: center; gap: 0; overflow-x: auto; }
+  .filter-btn { padding: 16px 20px; font-size: 12px; font-weight: 500; color: var(--muted); background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif; letter-spacing: 0.3px; transition: color 0.2s, border-color 0.2s; }
+  .filter-btn:hover { color: var(--gold-dark); }
+  .filter-btn.active { color: var(--gold-dark); border-bottom-color: var(--gold); font-weight: 600; }
+
+  /* ===== LISTING VIEW ===== */
+  #listingView { display: block; }
+  #propertyView { display: none; }
+
+  .listing-wrap { max-width: 1160px; margin: 0 auto; padding: 56px 40px; }
+  .listing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+
+  /* FEATURED (first property) */
+  .property-featured { grid-column: 1 / -1; display: grid; grid-template-columns: 1.4fr 1fr; background: var(--white); overflow: hidden; cursor: pointer; transition: box-shadow 0.3s; }
+  .property-featured:hover { box-shadow: 0 20px 60px rgba(0,0,0,0.12); }
+  .property-featured:hover .pf-img img { transform: scale(1.04); }
+  .pf-img { overflow: hidden; min-height: 340px; }
+  .pf-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; display: block; }
+  .pf-body { padding: 40px; display: flex; flex-direction: column; justify-content: center; }
+  .pf-tag { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold-dark); font-weight: 700; margin-bottom: 12px; }
+  .pf-title { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 500; color: var(--deep); line-height: 1.25; margin-bottom: 14px; }
+  .pf-excerpt { font-size: 14px; color: var(--muted); line-height: 1.75; margin-bottom: 24px; }
+  .pf-meta { display: flex; align-items: center; gap: 16px; font-size: 12px; color: var(--muted); margin-bottom: 20px; flex-wrap: wrap; }
+  .pf-meta span { display: flex; align-items: center; gap: 5px; }
+  .view-btn { display: inline-block; background: var(--gold); color: var(--deep); padding: 12px 28px; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; border: none; cursor: pointer; border-radius: 2px; transition: 0.2s; text-decoration: none; width: fit-content; }
+  .view-btn:hover { background: var(--gold-dark); color: var(--white); }
+
+  /* REGULAR CARD */
+  .property-card { background: var(--white); overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; }
+  .property-card:hover { transform: translateY(-5px); box-shadow: 0 16px 48px rgba(0,0,0,0.1); }
+  .property-card:hover .pc-img img { transform: scale(1.06); }
+  .pc-img { height: 210px; overflow: hidden; position: relative; }
+  .pc-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; display: block; }
+  .pc-tag { position: absolute; bottom: 0; left: 0; background: var(--gold); color: var(--deep); font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; }
+  .pc-body { padding: 22px; flex: 1; display: flex; flex-direction: column; }
+  .pc-title { font-family: 'Cormorant Garamond', serif; font-size: 19px; color: var(--deep); line-height: 1.35; margin-bottom: 8px; }
+  .pc-location { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .pc-excerpt { font-size: 13px; color: var(--muted); line-height: 1.7; flex: 1; }
+  .pc-footer { padding: 14px 22px; border-top: 1px solid var(--sand); display: flex; align-items: center; justify-content: space-between; }
+  .pc-price { font-size: 16px; color: var(--gold-dark); font-weight: 700; }
+  .pc-link { font-size: 12px; color: var(--gold-dark); font-weight: 700; }
+
+  .empty-properties { text-align: center; padding: 80px; grid-column: 1/-1; }
+  .empty-properties h3 { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--deep); margin-bottom: 10px; }
+  .empty-properties p { color: var(--muted); font-size: 14px; }
+
+  /* ===== PROPERTY DETAIL VIEW ===== */
+  .property-wrap { max-width: 1000px; margin: 0 auto; padding: 56px 40px 80px; }
+  .property-back { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; padding: 0; margin-bottom: 32px; transition: color 0.2s; }
+  .property-back:hover { color: var(--gold-dark); }
+
+  .property-header { margin-bottom: 32px; }
+  .property-tag { display: inline-block; background: rgba(201,168,76,0.15); border: 1px solid var(--gold); color: var(--gold-dark); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 5px 16px; margin-bottom: 12px; font-weight: 700; }
+  .property-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 48px); font-weight: 500; color: var(--deep); line-height: 1.2; margin-bottom: 12px; }
+  .property-location { font-size: 15px; color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 6px; }
+  .property-price { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 600; color: var(--gold-dark); margin-bottom: 24px; }
+
+  /* Share Section */
+  .share-section { display: flex; align-items: center; gap: 12px; padding-bottom: 24px; border-bottom: 1px solid var(--sand); margin-bottom: 32px; flex-wrap: wrap; }
+  .share-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .share-buttons { display: flex; gap: 10px; }
+  .share-btn { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 16px; transition: transform 0.2s, box-shadow 0.2s; border: none; cursor: pointer; }
+  .share-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .share-btn.whatsapp { background: #25D366; color: white; }
+  .share-btn.facebook { background: #1877F2; color: white; }
+  .share-btn.twitter { background: #1DA1F2; color: white; }
+  .share-btn.linkedin { background: #0A66C2; color: white; }
+  .share-btn.copy { background: var(--sand); color: var(--text); }
+
+  /* Image Gallery */
+  .property-gallery { margin-bottom: 40px; }
+  .main-image { width: 100%; height: 500px; object-fit: cover; display: block; margin-bottom: 12px; }
+  .thumbnail-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .thumbnail { width: 100%; height: 120px; object-fit: cover; display: block; cursor: pointer; transition: opacity 0.2s; }
+  .thumbnail:hover { opacity: 0.7; }
+
+  /* Property Details Grid */
+  .details-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; margin-bottom: 40px; }
+  .detail-section { background: var(--white); padding: 28px; }
+  .detail-section h2 { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--deep); margin-bottom: 16px; }
+  .detail-section p { font-size: 15px; line-height: 1.75; color: var(--text); margin-bottom: 12px; }
+  .detail-list { list-style: none; }
+  .detail-list li { font-size: 15px; color: var(--text); padding: 10px 0; border-bottom: 1px solid var(--sand); display: flex; justify-content: space-between; align-items: center; }
+  .detail-list li:last-child { border-bottom: none; }
+  .detail-list li strong { color: var(--deep); font-weight: 600; }
+  .detail-list li span { color: var(--muted); }
+
+  /* Amenities */
+  .amenities-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .amenity-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text); }
+  .amenity-item::before { content: '✓'; color: var(--gold-dark); font-weight: 700; font-size: 16px; }
+
+  /* CTA Box */
+  .property-cta { background: var(--deep); padding: 40px; text-align: center; margin: 40px 0; }
+  .property-cta h3 { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--white); margin-bottom: 10px; }
+  .property-cta p { color: rgba(255,255,255,0.6); font-size: 15px; margin-bottom: 24px; }
+  .cta-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .cta-btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; text-decoration: none; border-radius: 2px; transition: 0.2s; }
+  .cta-btn.primary { background: var(--gold); color: var(--deep); }
+  .cta-btn.primary:hover { background: var(--gold-light); }
+  .cta-btn.secondary { background: transparent; color: var(--white); border: 2px solid var(--white); }
+  .cta-btn.secondary:hover { background: var(--white); color: var(--deep); }
+
+  /* Related Properties */
+  .related-properties { margin-top: 56px; padding-top: 40px; border-top: 2px solid var(--sand); }
+  .related-properties h3 { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--deep); margin-bottom: 28px; }
+  .related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .related-card { background: var(--white); overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; display: block; }
+  .related-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,0.1); }
+  .related-card img { width: 100%; height: 160px; object-fit: cover; display: block; }
+  .related-card-body { padding: 16px; }
+  .related-card-tag { font-size: 10px; color: var(--gold-dark); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .related-card-title { font-size: 16px; color: var(--deep); font-weight: 600; margin-bottom: 6px; }
+  .related-card-price { font-size: 14px; color: var(--gold-dark); font-weight: 700; }
+
+  /* ===== FOOTER ===== */
+  footer { background: var(--deep); color: rgba(255,255,255,0.7); padding: 40px 40px 20px; }
+  .footer-top { max-width: 1160px; margin: 0 auto 32px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; }
+  .footer-brand strong { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--white); display: block; margin-bottom: 8px; }
+  .footer-brand p { font-size: 13px; line-height: 1.6; }
+  .footer-links-row { display: flex; gap: 24px; flex-wrap: wrap; }
+  .footer-links-row a { color: rgba(255,255,255,0.7); font-size: 13px; text-decoration: none; transition: color 0.2s; }
+  .footer-links-row a:hover { color: var(--gold-light); }
+  .footer-bottom { text-align: center; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; display: flex; justify-content: space-between; align-items: center; max-width: 1160px; margin: 0 auto; flex-wrap: wrap; gap: 12px; }
+  .footer-bottom a { color: var(--gold-light); text-decoration: none; }
+
+  /* ===== FLOATING CTAs ===== */
+  .floating-cta { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 12px; z-index: 999; }
+  .fab { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; text-decoration: none; box-shadow: 0 6px 24px rgba(0,0,0,0.2); transition: transform 0.2s; }
+  .fab:hover { transform: scale(1.1); }
+  .fab-call { background: var(--gold); color: var(--deep); }
+  .fab-wa { background: #25D366; color: white; }
+
+  /* Copy Notification */
+  .copy-notification { position: fixed; bottom: 100px; right: 24px; background: var(--deep); color: var(--white); padding: 12px 24px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); opacity: 0; transform: translateY(20px); transition: all 0.3s; z-index: 1000; pointer-events: none; }
+  .copy-notification.show { opacity: 1; transform: translateY(0); }
+
+  /* Responsive */
+  @media(max-width:900px){ 
+    .listing-grid{grid-template-columns:1fr;} 
+    .property-featured{grid-template-columns:1fr;} 
+    .pf-img{min-height:240px;} 
+    .details-grid{grid-template-columns:1fr;} 
+    .related-grid{grid-template-columns:1fr;} 
+    .footer-top{grid-template-columns:1fr;} 
+    .footer-bottom{justify-content:center;text-align:center;}
+    .thumbnail-strip{grid-template-columns:repeat(2,1fr);}
+    .main-image{height:300px;}
+  }
+
+  /* Fade in animation */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.6s ease-out forwards; opacity: 0; }
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  📞 Call for site visit: <a href="tel:+917054133390">+91 7054133390</a>  |  Trusted Real Estate Partner in Jaipur
+</div>
+
+<!-- Nav -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-icon">
+      <img src="logo.png" alt="Jaipur PrimeEstate" style="border-radius: 50%;">
+    </div>
+    <div>
+      <strong>Jaipur PrimeEstate</strong>
+      <span>Real Estate Partner</span>
+    </div>
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="property.html" class="active">Properties</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="tel:+917054133390" class="nav-cta">📞 Call Now</a></li>
+  </ul>
+  <button class="nav-hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- LISTING VIEW -->
+<div id="listingView">
+  <!-- Hero -->
+  <div class="properties-hero">
+    <div class="tag">Our Portfolio</div>
+    <h1>Explore <em>Properties</em></h1>
+    <p>JDA & RERA approved plots in Jaipur's prime locations</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" data-type="All" onclick="setFilter('All')">All Properties</button>
+    <button class="filter-btn" data-type="Residential Plot" onclick="setFilter('Residential Plot')">Residential</button>
+    <button class="filter-btn" data-type="JDA Approved Plot" onclick="setFilter('JDA Approved Plot')">JDA Approved</button>
+    <button class="filter-btn" data-type="RERA Plot" onclick="setFilter('RERA Plot')">RERA Certified</button>
+    <button class="filter-btn" data-type="Township Plot" onclick="setFilter('Township Plot')">Township</button>
+    <button class="filter-btn" data-type="Commercial Plot" onclick="setFilter('Commercial Plot')">Commercial</button>
+  </div>
+
+  <!-- Listing Grid -->
+  <div class="listing-wrap">
+    <div class="listing-grid" id="listingGrid">
+      <!-- Properties dynamically loaded here -->
+    </div>
+  </div>
+</div>
+
+<!-- PROPERTY DETAIL VIEW -->
+<div id="propertyView">
+  <div class="property-wrap">
+    <button class="property-back" onclick="showListing()">← Back to all properties</button>
+
+    <div class="property-header">
+      <span class="property-tag" id="propTag">Property</span>
+      <h1 class="property-title" id="propTitle"></h1>
+      <div class="property-location" id="propLocation"></div>
+      <div class="property-price" id="propPrice"></div>
+    </div>
+
+    <!-- Share Section -->
+    <div class="share-section">
+      <div class="share-label">Share this property:</div>
+      <div class="share-buttons">
+        <button class="share-btn whatsapp" onclick="shareProperty('whatsapp')" title="Share on WhatsApp">💬</button>
+        <button class="share-btn facebook" onclick="shareProperty('facebook')" title="Share on Facebook">f</button>
+        <button class="share-btn twitter" onclick="shareProperty('twitter')" title="Share on Twitter">𝕏</button>
+        <button class="share-btn linkedin" onclick="shareProperty('linkedin')" title="Share on LinkedIn">in</button>
+        <button class="share-btn copy" onclick="copyPropertyLink()" title="Copy link">🔗</button>
+      </div>
+    </div>
+
+    <!-- Image Gallery -->
+    <div class="property-gallery">
+      <img class="main-image" id="mainImage" src="" alt="">
+      <div class="thumbnail-strip" id="thumbnails"></div>
+    </div>
+
+    <!-- Property Details -->
+    <div class="details-grid">
+      <div class="detail-section">
+        <h2>Property Details</h2>
+        <ul class="detail-list" id="detailsList"></ul>
+      </div>
+      <div class="detail-section">
+        <h2>About This Property</h2>
+        <p id="propDescription"></p>
+        <div id="amenitiesSection"></div>
+      </div>
+    </div>
+
+    <!-- CTA Box -->
+    <div class="property-cta">
+      <h3>Interested in This Property?</h3>
+      <p>Schedule a site visit with our expert — Mr. Kedar Kholiya — for personalised guidance.</p>
+      <div class="cta-buttons">
+        <a href="https://wa.me/917054133390?text=Hi%2C%20I%20am%20interested%20in%20the%20property%20listing%20and%20would%20like%20to%20schedule%20a%20site%20visit" target="_blank" class="cta-btn primary">💬 WhatsApp Now</a>
+        <a href="tel:+917054133390" class="cta-btn secondary">📞 Call Us</a>
+        <a href="index.html#contact" class="cta-btn secondary">📝 Enquire Now</a>
+      </div>
+    </div>
+
+    <!-- Related Properties -->
+    <div class="related-properties">
+      <h3>Similar Properties</h3>
+      <div class="related-grid" id="relatedGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <strong>Jaipur PrimeEstate</strong>
+      <p>Your trusted real estate partner in Jaipur. JDA & RERA approved plots.</p>
+    </div>
+    <div class="footer-links-row">
+      <a href="index.html">Home</a>
+      <a href="property.html">Properties</a>
+      <a href="blog.html">Blog</a>
+      <a href="index.html#contact">Contact</a>
+      <a href="admin.html">Admin</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Jaipur PrimeEstate. All rights reserved.</span>
+    <span><a href="tel:+917054133390">+91 70541 33390</a></span>
+  </div>
+</footer>
+
+<!-- Floating CTAs -->
+<div class="floating-cta">
+  <a href="tel:+917054133390" class="fab fab-call">📞</a>
+  <a href="https://wa.me/917054133390" class="fab fab-wa" target="_blank">💬</a>
+</div>
+
+<!-- Copy Notification -->
+<div class="copy-notification" id="copyNotification">Link copied to clipboard!</div>
+
+<script>
+// ===== HAMBURGER =====
+document.getElementById('hamburger').addEventListener('click', () => {
+  document.getElementById('nav-links').classList.toggle('open');
+});
+
+// ===== DEFAULT PROPERTIES =====
+const DEFAULT_PROPERTIES = [
+  {
+    id: 1,
+    name: 'RLB Pride Residential Plots',
+    location: '📍 Jaipur–Kota Highway',
+    tag: 'JDA Approved',
+    price: '₹14,950/sq. yd.',
+    type: 'Residential Plot',
+    plotSize: '50–200 sq. yd.',
+    status: 'Available',
+    description: 'Premium JDA-approved plots with modern infrastructure near Kota Highway corridor. These plots offer excellent connectivity to both Jaipur city center and the rapidly developing industrial zones.',
+    imageUrl: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=1200&q=80',
+    amenities: ['24/7 Security', 'Wide Roads', 'Underground Electricity', 'Water Supply', 'Street Lighting', 'Green Spaces'],
+    rera: 'RAJ/P/2024/001',
+    possession: 'Immediate'
+  },
+  {
+    id: 2,
+    name: 'Balaji Green 2 City',
+    location: '📍 Bhilwada Highway, Jaipur',
+    tag: 'RERA Approved',
+    price: '₹19,950/sq. yd.',
+    type: 'Township Plot',
+    plotSize: '60–500 sq. yd.',
+    status: 'Available',
+    description: 'Affordable township plots in a well-planned colony with full amenities and green landscape. RERA registration ensures complete transparency and timely delivery.',
+    imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80',
+    amenities: ['Clubhouse', 'Swimming Pool', 'Kids Play Area', 'Jogging Track', 'Community Hall', 'Shopping Complex'],
+    possession: '6 Months'
+  }
+];
+
+// ===== LOCALSTORAGE FUNCTIONS =====
+function initProperties() {
+  if (!localStorage.getItem('jdh_properties')) {
+    localStorage.setItem('jdh_properties', JSON.stringify(DEFAULT_PROPERTIES));
+  }
+}
+
+function getProperties() {
+  const stored = localStorage.getItem('jdh_properties');
+  if (stored) {
+    try {
+      return JSON.parse(stored).filter(p => 
+        p.status === 'Available' || 
+        p.status === '🔥 Hot Deal' || 
+        p.status === 'published' || 
+        p.status === 'active'
+      );
+    } catch (e) {
+      console.error('Error parsing properties:', e);
+      return [];
+    }
+  }
+  return [];
+}
+
+// ===== FILTER =====
+let activeFilter = 'All';
+function setFilter(type) {
+  activeFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.type === type));
+  renderListing();
+}
+
+// ===== LISTING =====
+function renderListing() {
+  const properties = getProperties().sort((a,b) => (b.id || 0) - (a.id || 0));
+  const filtered = activeFilter === 'All' ? properties : properties.filter(p => p.type === activeFilter);
+  const grid = document.getElementById('listingGrid');
+  
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-properties"><h3>No properties available.</h3><p>Check back soon for new listings!</p></div>`;
+    return;
+  }
+  
+  let html = '';
+  filtered.forEach((p, i) => {
+    const imgUrl = p.imageUrl || p.img || 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=600&q=80';
+    const excerpt = (p.description || '').substring(0, 120) + '...';
+    
+    if (i === 0) {
+      html += `<div class="property-featured fade-up" onclick="openProperty(${p.id})">
+        <div class="pf-img"><img src="${imgUrl}" alt="${p.name}" onerror="this.src='https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=800&q=80'"></div>
+        <div class="pf-body">
+          <div class="pf-tag">${p.tag || p.type || 'Property'}</div>
+          <div class="pf-title">${p.name}</div>
+          <div class="pf-excerpt">${excerpt}</div>
+          <div class="pf-meta">
+            <span>📍 ${(p.location || '').replace('📍', '').trim()}</span>
+            <span>📐 ${p.plotSize || 'Various sizes'}</span>
+            <span>💰 ${p.price}</span>
+          </div>
+          <button class="view-btn" onclick="event.stopPropagation(); openProperty(${p.id})">View Details →</button>
+        </div>
+      </div>`;
+    } else {
+      html += `<div class="property-card fade-up" onclick="openProperty(${p.id})" style="animation-delay:${(i-1)*0.08}s">
+        <div class="pc-img">
+          <img src="${imgUrl}" alt="${p.name}" onerror="this.src='https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=600&q=80'">
+          <span class="pc-tag">${p.tag || p.type || 'Property'}</span>
+        </div>
+        <div class="pc-body">
+          <div class="pc-title">${p.name}</div>
+          <div class="pc-location">${p.location || ''}</div>
+          <div class="pc-excerpt">${excerpt}</div>
+        </div>
+        <div class="pc-footer">
+          <span class="pc-price">${p.price}</span>
+          <span class="pc-link">View Details →</span>
+        </div>
+      </div>`;
+    }
+  });
+  grid.innerHTML = html;
+}
+
+// ===== PROPERTY DETAIL =====
+let currentPropertyId = null;
+
+function openProperty(id) {
+  currentPropertyId = id;
+  const properties = getProperties();
+  const property = properties.find(p => p.id === id);
+  if (!property) return;
+  
+  // Update page title
+  document.title = `${property.name} – Jaipur PrimeEstate`;
+  
+  // Populate header
+  document.getElementById('propTag').textContent = property.tag || property.type || 'Property';
+  document.getElementById('propTitle').textContent = property.name;
+  document.getElementById('propLocation').innerHTML = property.location || '';
+  document.getElementById('propPrice').textContent = property.price;
+  document.getElementById('propDescription').textContent = property.description || '';
+  
+  // Main image
+  const imgUrl = property.imageUrl || property.img || 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=1200&q=80';
+  const mainImg = document.getElementById('mainImage');
+  mainImg.src = imgUrl;
+  mainImg.alt = property.name;
+  
+  // Thumbnails (if property has multiple images)
+  const images = property.images || [imgUrl];
+  const thumbContainer = document.getElementById('thumbnails');
+  if (images.length > 1) {
+    thumbContainer.innerHTML = images.map((img) => 
+      `<img class="thumbnail" src="${img}" alt="${property.name}" onclick="changeMainImage('${img}')">`
+    ).join('');
+  } else {
+    thumbContainer.innerHTML = '';
+  }
+  
+  // Property details
+  const details = {
+    'Plot Size': property.plotSize || 'Contact for details',
+    'Property Type': property.type || 'Residential',
+    'Approval': property.tag || 'Approved',
+    'Price': property.price,
+    'RERA/JDA': property.rera || 'Certified',
+    'Possession': property.possession || 'Contact for details'
+  };
+  
+  const detailsList = document.getElementById('detailsList');
+  detailsList.innerHTML = Object.entries(details).map(([key, value]) => 
+    `<li><strong>${key}</strong> <span>${value}</span></li>`
+  ).join('');
+  
+  // Amenities
+  if (property.amenities && property.amenities.length > 0) {
+    const amenitiesHtml = `
+      <h2 style="margin-top: 24px; margin-bottom: 12px; font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--deep);">Amenities</h2>
+      <div class="amenities-grid">
+        ${property.amenities.map(a => `<div class="amenity-item">${a}</div>`).join('')}
+      </div>
+    `;
+    document.getElementById('amenitiesSection').innerHTML = amenitiesHtml;
+  } else {
+    document.getElementById('amenitiesSection').innerHTML = '';
+  }
+  
+  // Related properties
+  loadRelatedProperties(property);
+  
+  // Switch views
+  document.getElementById('listingView').style.display = 'none';
+  document.getElementById('propertyView').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // Update URL
+  history.pushState({ id }, '', `?id=${id}`);
+}
+
+function loadRelatedProperties(currentProperty) {
+  const properties = getProperties();
+  const related = properties.filter(p => 
+    p.id !== currentProperty.id && 
+    (p.type === currentProperty.type || p.tag === currentProperty.tag)
+  ).slice(0, 3);
+  
+  const grid = document.getElementById('relatedGrid');
+  if (!related.length) {
+    grid.innerHTML = '<p style="color:var(--muted);font-size:14px;grid-column:1/-1">No similar properties available.</p>';
+    return;
+  }
+  
+  grid.innerHTML = related.map(p => {
+    const imgUrl = p.imageUrl || p.img || 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=600&q=80';
+    return `
+    <a href="javascript:void(0)" onclick="openProperty(${p.id})" class="related-card">
+      <img src="${imgUrl}" alt="${p.name}" onerror="this.src='https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=600&q=80'">
+      <div class="related-card-body">
+        <div class="related-card-tag">${p.tag || p.type}</div>
+        <div class="related-card-title">${p.name}</div>
+        <div class="related-card-price">${p.price}</div>
+      </div>
+    </a>
+  `}).join('');
+}
+
+function changeMainImage(src) {
+  document.getElementById('mainImage').src = src;
+}
+
+function showListing() {
+  document.getElementById('listingView').style.display = 'block';
+  document.getElementById('propertyView').style.display = 'none';
+  document.title = 'Properties – Jaipur PrimeEstate';
+  history.pushState({}, '', 'property.html');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Handle browser back button
+window.addEventListener('popstate', (e) => {
+  if (e.state && e.state.id) {
+    openProperty(e.state.id);
+  } else {
+    showListing();
+  }
+});
+
+// ===== SHARE FUNCTIONS =====
+function shareProperty(platform) {
+  const properties = getProperties();
+  const property = properties.find(p => p.id === currentPropertyId);
+  if (!property) return;
+  
+  const url = window.location.href;
+  const title = property.name;
+  const text = `Check out this property: ${title} at ${property.location}`;
+  
+  let shareUrl = '';
+  switch(platform) {
+    case 'whatsapp':
+      shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' - ' + url)}`;
+      break;
+    case 'facebook':
+      shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+      break;
+    case 'twitter':
+      shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+      break;
+    case 'linkedin':
+      shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+      break;
+  }
+  
+  if (shareUrl) {
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+  }
+}
+
+function copyPropertyLink() {
+  const url = window.location.href;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => {
+      showCopyNotification();
+    }).catch(() => {
+      fallbackCopy(url);
+    });
+  } else {
+    fallbackCopy(url);
+  }
+}
+
+function fallbackCopy(text) {
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  textArea.style.position = 'fixed';
+  textArea.style.left = '-999999px';
+  document.body.appendChild(textArea);
+  textArea.select();
+  try {
+    document.execCommand('copy');
+    showCopyNotification();
+  } catch (err) {
+    console.error('Failed to copy:', err);
+  }
+  document.body.removeChild(textArea);
+}
+
+function showCopyNotification() {
+  const notification = document.getElementById('copyNotification');
+  notification.classList.add('show');
+  setTimeout(() => {
+    notification.classList.remove('show');
+  }, 2000);
+}
+
+// ===== INIT =====
+initProperties();
+renderListing();
+
+// Check if URL has ?id=
+const urlId = new URLSearchParams(location.search).get('id');
+if (urlId) {
+  openProperty(+urlId);
+}
+
+// Log status
+console.log('✅ Properties page initialized');
+console.log('📊 Loaded', getProperties().length, 'properties from localStorage');
+</script>
+</body>
+</html>
