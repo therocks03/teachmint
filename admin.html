@@ -715,7 +715,7 @@ function closeOverlay(){document.getElementById('deleteOverlay').classList.remov
 // ===== EXPORT =====
 function generateExport(){
   const props=getProps().filter(p=>p.status!=='sold');
-  const html=props.map(p=>{const wa=encodeURIComponent(p.waMsg||`Hi, I am interested in ${p.name}`);return `    <a href="https://wa.me/919772732488?text=${wa}" class="property-card fade-in" target="_blank">
+  const html=props.map(p=>{const wa=encodeURIComponent(p.waMsg||`Hi, I am interested in ${p.name}`);return `    <a href="https://wa.me/917054133390?text=${wa}" class="property-card fade-in" target="_blank">
       <div class="card-img">
         <img src="${p.img||'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=80'}" alt="${p.name}" loading="lazy">
         ${p.tag?`<span class="card-tag">${p.tag}</span>`:''}
